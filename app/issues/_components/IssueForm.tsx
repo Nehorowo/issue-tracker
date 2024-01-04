@@ -6,19 +6,15 @@ import { Issue } from "@prisma/client";
 import { Button, Callout, TextField } from "@radix-ui/themes";
 import axios from "axios";
 import "easymde/dist/easymde.min.css";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import SimpleMdeReact from "react-simplemde-editor";
 
 type IssueFormData = z.infer<typeof issueSchema>;
 
-const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false,
-});
-
-export const IssueForm = ({ issue }: { issue?: Issue }) => {
+const IssueForm = ({ issue }: { issue?: Issue }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const {
@@ -68,7 +64,7 @@ export const IssueForm = ({ issue }: { issue?: Issue }) => {
           name="description"
           control={control}
           render={({ field }) => (
-            <SimpleMDE placeholder="Description" {...field} />
+            <SimpleMdeReact placeholder="Description" {...field} />
           )}
         />
         <ErrorMessage>{errors?.description?.message}</ErrorMessage>
@@ -79,3 +75,5 @@ export const IssueForm = ({ issue }: { issue?: Issue }) => {
     </div>
   );
 };
+
+export default IssueForm;
