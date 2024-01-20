@@ -36,7 +36,7 @@ export const AssigneeSelect = ({ issue }: { issue: Issue }) => {
             <Select.Label>Suggestions</Select.Label>
             <Select.Item value="unassigned">Unassigned</Select.Item>
             {users?.map(({ id, name }) => (
-              <Select.Item key={id} value={id}>
+              <Select.Item key={id + name} value={id}>
                 {name}
               </Select.Item>
             ))}
