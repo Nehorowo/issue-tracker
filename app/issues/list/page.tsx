@@ -1,6 +1,6 @@
 import prisma from "@/prisma/client";
-import { Table } from "@radix-ui/themes";
-import { IssueStatusBadge, Link } from "@/app/components";
+import { Box, Table } from "@radix-ui/themes";
+import { IssueStatusBadge, Link, Pagination } from "@/app/components";
 import IssueActions from "./IssueActions";
 import { Issue, Status } from "@prisma/client";
 import NextLink from "next/link";
@@ -11,6 +11,7 @@ interface Props {
     status: Status;
     orderBy: keyof Issue;
     sortDirection: "asc" | "desc";
+    page: string;
   };
 }
 
@@ -29,6 +30,10 @@ const IssuesPage = async ({ searchParams }: Props) => {
   const status = statuses.includes(searchParams.status)
     ? searchParams.status
     : undefined;
+  const where = { status };
+
+  const page = parseInt(searchParams?.page) || 1;
+  const pageSize = 10;
 
   const orderBy = columns
     .map(({ value }) => value)
@@ -37,11 +42,13 @@ const IssuesPage = async ({ searchParams }: Props) => {
     : undefined;
 
   const issues = await prisma.issue.findMany({
-    where: {
-      status,
-    },
+    where,
     orderBy,
+    skip: (page - 1) * pageSize,
+    take: pageSize,
   });
+
+  const issuesCount = await prisma.issue.count({ where });
 
   return (
     <div>
@@ -95,6 +102,13 @@ const IssuesPage = async ({ searchParams }: Props) => {
           ))}
         </Table.Body>
       </Table.Root>
+      <Box mt="5">
+        <Pagination
+          pageSize={pageSize}
+          currentPage={page}
+          itemsCount={issuesCount}
+        />
+      </Box>
     </div>
   );
 };
